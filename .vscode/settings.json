@@ -1,0 +1,5 @@
+{
+  "testing.automaticallyOpenPeekView": "never",
+  "jest.runMode": "on-demand",
+  "python.testing.pytestEnabled": true
+}

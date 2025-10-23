@@ -1,0 +1,17 @@
+FROM node:lts
+
+WORKDIR /app
+COPY health.sh .
+RUN chmod +x health.sh
+RUN  mkdir /invoices/
+COPY resources/ /invoices/
+
+COPY package*.json .
+RUN npm ci
+
+COPY . .
+RUN npx tsc --build
+
+EXPOSE 3000
+
+CMD ["node", "dist/src/index.js"]

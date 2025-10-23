@@ -1,0 +1,21 @@
+import db from '../db';
+import { User } from '../types/user';
+
+export const addUser = async (user: User) => {
+  await db('users').insert(user);
+};
+
+export const findUserByEmail = async (email: string): Promise<User | undefined> => {
+  return await db('users').where({ email }).first();
+};
+
+export const findUserById = async (id: string): Promise<User | undefined> => {
+  return await db('users').where({ id }).first();
+};
+
+export const updateUser = async (id: string, data: Partial<User>) => {
+  return await db('users')
+    .where({ id })
+    .update(data)
+    .returning('*');
+};
