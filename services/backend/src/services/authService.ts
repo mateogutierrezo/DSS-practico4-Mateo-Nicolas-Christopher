@@ -42,13 +42,24 @@ class AuthService {
     });
     const link = `${process.env.FRONTEND_URL}/activate-user?token=${invite_token}&username=${user.username}`;
    
-    const template = `
-      <html>
-        <body>
-          <h1>Hello ${user.first_name} ${user.last_name}</h1>
-          <p>Click <a href="${ link }">here</a> to activate your account.</p>
-        </body>
-      </html>`;
+   function escapeHtml(str: unknown): string {
+    if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+  const template = `
+    <html>
+      <body>
+        <h1>Hello ${escapeHtml(user.first_name)} ${escapeHtml(user.last_name)}</h1>
+        <p>Click <a href="${escapeHtml(link)}">here</a> to activate your account.</p>
+      </body>
+    </html>`;
+    
     const htmlBody = ejs.render(template);
     
     await transporter.sendMail({
