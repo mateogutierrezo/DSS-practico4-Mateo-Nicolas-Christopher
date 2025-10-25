@@ -14,7 +14,7 @@ interface InvoiceRow {
 }
 
 class InvoiceService {
-  static async list(userId: string, operator: string, status?: string): Promise<Invoice[]> {
+  static async list(userId: string, operator?: string, status?: string): Promise<Invoice[]> {
     let q = db<InvoiceRow>('invoices').where({ userId: userId });
     const allowedOperators = ['=', '!=', '<>'];
     if (operator && !allowedOperators.includes(operator)) {
