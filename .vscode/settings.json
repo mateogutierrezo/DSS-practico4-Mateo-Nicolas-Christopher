@@ -1,5 +1,6 @@
 {
   "testing.automaticallyOpenPeekView": "never",
   "jest.runMode": "on-demand",
-  "python.testing.pytestEnabled": true
+  "python.testing.pytestEnabled": true,
+  "python-envs.pythonProjects": []
 }

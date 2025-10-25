@@ -58,7 +58,7 @@ describe('AuthService.generateJwt', () => {
       select: jest.fn().mockResolvedValue(mockInvoices),
     };
     mockedDb.mockReturnValue(selectChain as any);
-    const invoices = await InvoiceService.list(userId);
+    const invoices = await InvoiceService.list(userId, "=");
 
     expect(mockedDb().where).toHaveBeenCalledWith({ userId });
     expect(mockedDb().andWhere).not.toHaveBeenCalled();
