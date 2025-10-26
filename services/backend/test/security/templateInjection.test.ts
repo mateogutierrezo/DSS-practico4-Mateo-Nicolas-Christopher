@@ -51,8 +51,8 @@ describe('Seguridad - Prevención de Template Injection en createUser', () => {
       id: 'user-999',
       email: 'evil@example.com',
       password: 'pass123',
-      first_name: '<%= 2 + 2 %>', // EJS-like
-      last_name: '{{7*7}}',       // Mustache-like
+      first_name: '<%= 2 + 2 %>', 
+      last_name: '{{7*7}}',       
       username: 'attacker',
     } as User;
 
@@ -77,18 +77,17 @@ describe('Seguridad - Prevención de Template Injection en createUser', () => {
     await AuthService.createUser(maliciousUser);
 
     // --- Inspección del correo "enviado" ---
-    expect(sendMailMock).toHaveBeenCalled(); // sanity: se intentó enviar un correo
+    expect(sendMailMock).toHaveBeenCalled(); // se intentó enviar un correo
     const sendArgs = sendMailMock.mock.calls[0][0]; // primer llamado, primer arg (obj mail)
     const htmlBody: string = sendArgs.html;
 
     // --- Aserciones de seguridad documentadas ---
 
-    // 1) La expresión EJS original debe aparecer ESCAPADA en el HTML (no evaluada).
+    // 1) La expresión EJS original no debe ser evaluada por el HTML
     //    Ejemplo esperado: "<%= 2 + 2 %>" -> "&lt;%= 2 + 2 %&gt;"
     expect(htmlBody).toContain('&lt;%= 2 + 2 %&gt;');
 
-    // 2) El patrón mustache-like puede permanecer sin cambios según mitigación
-    //    (en nuestro mitigado actual, las llaves se dejan tal cual), por eso esperamos
+    // 2) El patrón {{ }} puede permanecer sin cambios, por eso esperamos
     //    encontrar '{{7*7}}' tal cual en el HTML.
     expect(htmlBody).toContain('{{7*7}}');
 
