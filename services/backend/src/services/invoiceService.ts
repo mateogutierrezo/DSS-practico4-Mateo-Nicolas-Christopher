@@ -18,7 +18,7 @@ class InvoiceService {
     let q = db<InvoiceRow>('invoices').where({ userId: userId });
     const allowedOperators = ['=', '!=', '<>'];
     if (operator && !allowedOperators.includes(operator)) {
-        throw new Error('Invalid operator');
+        throw new Error('Invalid operator :(');
     }
     if (status && operator) {
       q = q.andWhere('status', operator, status);
