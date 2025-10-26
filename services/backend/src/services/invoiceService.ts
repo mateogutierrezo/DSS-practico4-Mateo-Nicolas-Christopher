@@ -14,27 +14,35 @@ interface InvoiceRow {
 }
 
 class InvoiceService {
-  static async list(userId: string, operator?: string, status?: string): Promise<Invoice[]> {
-    let q = db<InvoiceRow>('invoices').where({ userId: userId });
+ static async list(userId: string, operator?: string, status?: string): Promise<Invoice[]> {
+  try {
+    let q = db<InvoiceRow>('invoices').where({ userId });
+
     const allowedOperators = ['=', '!=', '<>'];
-    if (operator && !allowedOperators.includes(operator)) {
-        throw new Error('Invalid operator :(');
-    }
+    if (operator && !allowedOperators.includes(operator)) throw new Error('Invalid operator :(');
+
     if (status && operator) {
-      q = q.andWhere('status', operator, status);
+      if (operator === '=')      q = q.andWhere('status', '=', status);
+      else if (operator === '!=') q = q.andWhere('status', '!=', status);
+      else if (operator === '<>') q = q.andWhere('status', '<>', status);
     }
 
+    console.log('QUERY SQL (debug):', q.toSQL());
     const rows = await q.select();
-    const invoices = rows.map(row => ({
+    return rows.map(row => ({
       id: row.id,
       userId: row.userId,
       amount: row.amount,
       dueDate: row.dueDate,
       status: row.status
     } as Invoice));
-
-    return invoices;
+  } catch (e) {
+    console.error('Query failed, returning empty list:', e);
+    return [];
   }
+}
+
+
 
   static async setPaymentCard(
     userId: string,
