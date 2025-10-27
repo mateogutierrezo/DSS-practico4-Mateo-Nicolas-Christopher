@@ -36,7 +36,6 @@ describe('Seguridad - Prevención de Template Injection en createUser', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    // Definimos FRONTEND_URL para que el enlace en el template no salga "undefined".
     process.env = { ...OLD_ENV, FRONTEND_URL: 'http://localhost' };
   });
 
@@ -56,14 +55,13 @@ describe('Seguridad - Prevención de Template Injection en createUser', () => {
       username: 'attacker',
     } as User;
 
-    // --- Mocks de DB ---
     // Primer llamado: select (verifica que no exista usuario)
     const selectChain = {
       where: jest.fn().mockReturnThis(),
       orWhere: jest.fn().mockReturnThis(),
-      first: jest.fn().mockResolvedValue(null), // No existe -> continua creación
+      first: jest.fn().mockResolvedValue(null),
     };
-    // Segundo llamado: insert (simulamos la inserción)
+    // Segundo llamado: insert
     const insertChain = {
       returning: jest.fn().mockResolvedValue([maliciousUser]),
       insert: jest.fn().mockReturnThis(),
@@ -73,15 +71,15 @@ describe('Seguridad - Prevención de Template Injection en createUser', () => {
       .mockReturnValueOnce(selectChain as any)
       .mockReturnValueOnce(insertChain as any);
 
-    // --- Ejecución: crear usuario (esto generará el HTML y "enviará" el mail mockeado)
+    // Ejecución: crear usuario (esto generará el HTML y "enviará" el mail mockeado)
     await AuthService.createUser(maliciousUser);
 
-    // --- Inspección del correo "enviado" ---
+    //  Inspección del correo "enviado" 
     expect(sendMailMock).toHaveBeenCalled(); // se intentó enviar un correo
     const sendArgs = sendMailMock.mock.calls[0][0]; // primer llamado, primer arg (obj mail)
     const htmlBody: string = sendArgs.html;
 
-    // --- Aserciones de seguridad documentadas ---
+    //  Aserciones de seguridad documentadas 
 
     // 1) La expresión EJS original no debe ser evaluada por el HTML
     //    Ejemplo esperado: "<%= 2 + 2 %>" -> "&lt;%= 2 + 2 %&gt;"
