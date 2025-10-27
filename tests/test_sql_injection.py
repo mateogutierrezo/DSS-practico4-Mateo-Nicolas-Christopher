@@ -1,3 +1,11 @@
+#   Prueba de seguridad (Pytest) que valida la mitigación del SQLi
+#   en la funcionalidad de listar facturas (InvoiceService.list).
+ 
+#   Objetivo:
+#   - Verificar que los campos provistos por el usuario 
+#     que contengan operadores SQL NO sean
+#     concatenados en la consulta a la base de datos.
+
 import pytest
 import random
 import time

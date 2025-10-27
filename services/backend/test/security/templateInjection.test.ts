@@ -15,7 +15,6 @@ import AuthService from '../../src/services/authService';
 import db from '../../src/db';
 import { User } from '../../src/types/user';
 
-// --- Mocks ---
 // Mockeamos la DB para no tocar la base real durante las pruebas unitarias.
 jest.mock('../../src/db');
 const mockedDb = db as jest.MockedFunction<typeof db>;
@@ -46,7 +45,7 @@ describe('Seguridad - Prevención de Template Injection en createUser', () => {
   });
 
   it('debe evitar la ejecución de código en nombres del usuario (mitigado)', async () => {
-    // --- Datos de prueba (usuario con payload malicioso) ---
+    // Datos de prueba (usuario con payload malicioso)
     const maliciousUser = {
       id: 'user-999',
       email: 'evil@example.com',
@@ -73,15 +72,15 @@ describe('Seguridad - Prevención de Template Injection en createUser', () => {
       .mockReturnValueOnce(selectChain as any)
       .mockReturnValueOnce(insertChain as any);
 
-    // --- Ejecución: crear usuario (esto generará el HTML y "enviará" el mail mockeado)
+    // Ejecución: crear usuario (esto generará el HTML y "enviará" el mail mockeado)
     await AuthService.createUser(maliciousUser);
 
-    // --- Inspección del correo "enviado" ---
+    //  Inspección del correo "enviado" 
     expect(sendMailMock).toHaveBeenCalled(); // se intentó enviar un correo
     const sendArgs = sendMailMock.mock.calls[0][0]; // primer llamado, primer arg (obj mail)
     const htmlBody: string = sendArgs.html;
 
-    // --- Aserciones de seguridad documentadas ---
+    //  Aserciones de seguridad documentadas 
 
     // 1) La expresión EJS original no debe ser evaluada por el HTML
     //    Ejemplo esperado: "<%= 2 + 2 %>" -> "&lt;%= 2 + 2 %&gt;"
